@@ -1,0 +1,10 @@
+[
+  {
+    "id": "Default (GitHub)",
+    "name": "Default",
+    "type": "remote_manifest",
+    "url": "https://raw.githubusercontent.com/alexandreparente/enterprise_wizard/84c007177bce0962f6a3cc863e4e3ab90bd32737/repository/manifest.json",
+    "description": "Recursos oficiais hospedados no repositório do projeto",
+    "default_checked": false
+  }
+]
