@@ -1,0 +1,33 @@
+[general]
+name=Enterprise Setup Wizard
+description=Installs standard enterprise resources, models, and connections for QGIS.
+qgisMinimumVersion=3.34
+version=1.0
+author=Alexandre Parente Lima
+email=alexandre.parente@gmail.com
+
+about=The plugin scans a centralized folder structure (organized by departments/divisions) and copies selected resources (projects, SVGs, styles, connections) to the user profile, ensuring a standardized work environment.
+tracker=https://github.com/alexandreparente/enterprise_wizard/issues
+repository=https://github.com/alexandreparente/enterprise_wizard
+
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+
+tags=setup, configuration, profile, standardization, enterprise, resources
+
+homepage=https://github.com/alexandreparente/enterprise_wizard
+
+# icon=icon.svg
+
+experimental=False
+deprecated=False
+
+category=Utilities
+
+server=False
+
+changelog=
+    1.0 - Initial release with support for Projects, SVGs, Fonts, CRS, Styles, and Recommended Plugins.
