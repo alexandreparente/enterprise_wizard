@@ -1,0 +1,21 @@
+{
+  "division_name": "Default Resources",
+  "version": "1.0",
+  "description": "Pacote de recursos padrão para QGIS",
+
+  "composer_templates": [
+    {
+      "filename": "Simple A4 Portrait.qpt",
+      "url": "https://layout-hub.github.io/layout-dir/Simple%20A4%20Portrait.qpt",
+      "label": "Simple A4 Portrait",
+      "description": "Layout básico A4 em orientação retrato.",
+      "is_zip": false,
+      "author": "Layout Hub",
+      "license": "CC-BY 4.0"
+    }
+  ],
+
+  "styles": [],
+  "svg": [],
+  "repositories": []
+}
