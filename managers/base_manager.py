@@ -66,8 +66,12 @@ class BaseManager(ABC):
         return None
 
     @property
-    def json_section_name(self):
+    def source_subfolder(self):
         return self.destination_subfolder
+
+    @property
+    def json_section_name(self):
+        return self.source_subfolder
 
     @property
     def allowed_extensions(self):
@@ -106,7 +110,7 @@ class BaseManager(ABC):
     # --- Main Methods ---
 
     def discover_items(self):
-        if not self.destination_subfolder:
+        if not self.source_subfolder:
             return []
 
         all_items = []
@@ -133,7 +137,7 @@ class BaseManager(ABC):
 
     def _discover_folder_items(self, div_label, div_folder_name):
         items = []
-        path = os.path.join(self.config_root, div_folder_name, self.destination_subfolder)
+        path = os.path.join(self.config_root, div_folder_name, self.source_subfolder)
         valid_exts = self.allowed_extensions
 
         if not os.path.isdir(path): return []
@@ -231,7 +235,9 @@ class BaseManager(ABC):
 
                 if is_zip_file:
                     with zipfile.ZipFile(source_to_use, 'r') as z:
-                        z.extractall(dest_dir)
+                        # Ensures it extracts to dest_dir (only if dest_dir exists)
+                        if dest_dir:
+                            z.extractall(dest_dir)
                     log_callback(tr("[OK] Extracted: %s") % item['label'])
                 else:
                     success = self._install_action(source_to_use, final_path, item)

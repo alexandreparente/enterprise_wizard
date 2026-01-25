@@ -127,7 +127,10 @@ class PostgresConnectionManager(GenericConnectionManager):
 
     # Defines which subfolder to scan: divisions/<division>/connections/postgis
     @property
-    def destination_subfolder(self): return "connections/postgis"
+    def source_subfolder(self): return "connections/postgis"
+
+    @property
+    def destination_subfolder(self): return None
 
     @property
     def target_xml_tags(self): return ["postgis", "postgresql"]
@@ -146,8 +149,12 @@ class XyzConnectionManager(GenericConnectionManager):
         return tr("Base maps (Google, OSM, etc)")
 
     @property
-    def destination_subfolder(self):
+    def source_subfolder(self):
         return "connections/xyz"
+
+    @property
+    def destination_subfolder(self):
+        return None
 
     @property
     def target_xml_tags(self):
@@ -177,8 +184,12 @@ class WfsConnectionManager(GenericConnectionManager):
         return tr("WFS and WMS services")
 
     @property
-    def destination_subfolder(self):
+    def source_subfolder(self):
         return "connections/wfs"
+
+    @property
+    def destination_subfolder(self):
+        return None
 
     @property
     def target_xml_tags(self):
@@ -205,8 +216,12 @@ class ArcGisConnectionManager(GenericConnectionManager):
         return tr("ArcGIS Feature Server")
 
     @property
-    def destination_subfolder(self):
+    def source_subfolder(self):
         return "connections/arcgis"
+
+    @property
+    def destination_subfolder(self):
+        return None
 
     @property
     def target_xml_tags(self):
