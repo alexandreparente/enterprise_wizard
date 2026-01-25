@@ -1,17 +1,21 @@
-[
-  {
-    "name": "Simple A4 Portrait",
-    "filename": "Simple A4 Portrait.qpt",
-    "download_url": "https://layout-hub.github.io/layout-dir/Simple%20A4%20Portrait.qpt",
-    "description": "Layout básico A4 em orientação retrato.",
-    "is_zip": false,
-    "author": "Layout Hub",
-    "license": "CC-BY 4.0"
-  },
-  {
-    "name": "Família Ubuntu",
-    "filename": "Ubuntu_Family.zip",
-    "download_url": "https://github.com/alexandreparente/enterprise_wizard/raw/f32bdede8e40d889ebc143b35aee6dc359947ebc/repository/Ubuntu.zip",
-    "is_zip": true
-  }
-]
+{
+  "composer_templates": [
+    {
+      "name": "Simple A4 Portrait",
+      "filename": "Simple A4 Portrait.qpt",
+      "download_url": "https://layout-hub.github.io/layout-dir/Simple%20A4%20Portrait.qpt",
+      "description": "Layout básico A4 em orientação retrato.",
+      "is_zip": false,
+      "author": "Layout Hub",
+      "license": "CC-BY 4.0"
+    }
+  ],
+  "fonts": [
+    {
+      "name": "Família Ubuntu",
+      "filename": "Ubuntu_Family.zip",
+      "download_url": "https://github.com/alexandreparente/enterprise_wizard/raw/f32bdede8e40d889ebc143b35aee6dc359947ebc/repository/Ubuntu.zip",
+      "is_zip": true
+    }
+  ]
+}
