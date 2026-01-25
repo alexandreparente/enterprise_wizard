@@ -82,7 +82,7 @@ The configuration root is organized by Division.
 Each division contains subdirectories scanned by the corresponding resource managers.
 
 ```text
-config/
+divisions/
 ├── division_name/
 │   ├── project_templates/      # .qgz, .qgs
 │   ├── composer_templates/     # .qpt

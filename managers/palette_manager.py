@@ -42,7 +42,7 @@ class PaletteManager(BaseManager):
     def destination_subfolder(self):
         """
         Defines the 'palettes' folder.
-        Searches in: config/<division>/palettes
+        Searches in: divisions/<division>/palettes
         Installs in: .../profiles/default/palettes
         """
         return "palettes"

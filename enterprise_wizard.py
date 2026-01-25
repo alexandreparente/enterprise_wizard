@@ -61,7 +61,7 @@ class EnterpriseWizardPlugin:
         self.iface = iface
         # Path to configuration folder
         self.plugin_dir = os.path.dirname(__file__)
-        self.config_root = os.path.join(self.plugin_dir, "config")
+        self.config_root = os.path.join(self.plugin_dir, "divisions")
 
         # Localization Configuration (i18n)
         settings = QSettings()

@@ -48,7 +48,7 @@ class DivisionLoader:
 
     def enrich_config(self, config):
         """
-        Analyzes the config dictionary and injects 'manifest_data' if necessary.
+        Analyzes the divisions dictionary and injects 'manifest_data' if necessary.
         Raises Exceptions if loading fails, to be caught by the UI.
         Modifies the dictionary in-place.
         """

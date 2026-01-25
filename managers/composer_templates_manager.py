@@ -43,7 +43,7 @@ class ComposerTemplatesManager(BaseManager):
     def destination_subfolder(self):
         """
         Defines the destination and source folder as 'composer_templates'.
-        Searches in: config/<division>/composer_templates
+        Searches in: divisions/<division>/composer_templates
         Installs in: .../profiles/default/composer_templates
         """
         return "composer_templates"

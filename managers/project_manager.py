@@ -43,7 +43,7 @@ class ProjectManager(BaseManager):
     def destination_subfolder(self):
         """
         Defines the destination and source folder as 'project_templates'.
-        Searches in: config/<division>/project_templates
+        Searches in: divisions/<division>/project_templates
         Installs in: .../profiles/default/project_templates
         """
         return "project_templates"

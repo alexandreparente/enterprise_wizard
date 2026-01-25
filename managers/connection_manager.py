@@ -125,7 +125,7 @@ class PostgresConnectionManager(GenericConnectionManager):
     @property
     def description(self): return tr("PostGIS databases")
 
-    # Defines which subfolder to scan: config/<division>/connections/postgis
+    # Defines which subfolder to scan: divisions/<division>/connections/postgis
     @property
     def destination_subfolder(self): return "connections/postgis"
 

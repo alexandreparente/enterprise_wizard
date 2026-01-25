@@ -139,7 +139,7 @@ class PageDivisoes(QWizardPage):
         divisions_file = os.path.join(root, 'divisions.json')
 
         available_divisions = []
-        loaded_ids = set()  # Used to ensure JSON config has priority
+        loaded_ids = set()  # Used to ensure JSON divisions has priority
 
         # Load divisions.json (Explicit/Remote Definitions)
         if os.path.exists(divisions_file):

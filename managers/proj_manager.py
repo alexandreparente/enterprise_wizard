@@ -47,7 +47,7 @@ class ProjManager(BaseManager):
     def destination_subfolder(self):
         """
         Defines the destination and source folder as 'proj'.
-        Searches in: config/<division>/proj
+        Searches in: divisions/<division>/proj
         Installs in: .../profiles/default/proj
         """
         return "proj"
