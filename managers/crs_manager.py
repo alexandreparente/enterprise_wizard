@@ -44,8 +44,12 @@ class CrsManager(BaseManager):
         return tr("Select custom projections (WKT) for installation")
 
     @property
-    def destination_subfolder(self):
+    def source_subfolder(self):
         return "crs"
+
+    @property
+    def destination_subfolder(self):
+        return None
 
     @property
     def allowed_extensions(self):
