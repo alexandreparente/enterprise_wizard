@@ -132,11 +132,11 @@ class PageDivisoes(QWizardPage):
     def _populate_list(self):
         """
         Populates the division list using ADDITIVE logic (AND).
-        - Load definitions from divisions.json (if exists).
+        - Load definitions from divisions.json.
         - Scan local physical folders and add those not present in JSON.
         """
         root = self.wizard_parent.config_root
-        divisions_file = os.path.join(root, 'divisions.json')
+        divisions_file = os.path.join(os.path.dirname(root), 'divisions.json')
 
         available_divisions = []
         loaded_ids = set()  # Used to ensure JSON divisions has priority
@@ -161,11 +161,10 @@ class PageDivisoes(QWizardPage):
                         if entry_id:
                             loaded_ids.add(entry_id)
             except Exception as e:
-                # Silent log to avoid freezing the plugin if JSON is broken
                 print(f"Error reading divisions.json: {e}")
 
         # Scan Physical Folders (Automatic Discovery)
-        # Always executes. The administrator controls this by distributing folders or not.
+        # Always executes if the 'divisions' folder exists
         if os.path.exists(root):
             pastas = sorted(d for d in os.listdir(root)
                             if os.path.isdir(os.path.join(root, d)))
@@ -177,8 +176,8 @@ class PageDivisoes(QWizardPage):
                     # ...Add as a default local division
                     available_divisions.append({
                         "id": d,
-                        "name": format_resource_name(d),  # Ex: "my_folder" -> "My Folder"
-                        "type": DIV_TYPE_FOLDER,  # Imported constant
+                        "name": format_resource_name(d),
+                        "type": DIV_TYPE_FOLDER,
                         "path": d,
                         "default_checked": True
                     })
@@ -190,7 +189,7 @@ class PageDivisoes(QWizardPage):
             name = div.get('name', div.get('id', 'Unknown'))
             div_type = div.get('type', DIV_TYPE_FOLDER)
 
-            # Re-added logic: Append marker for remote divisions
+            # Append marker for remote divisions
             if div_type == DIV_TYPE_REMOTE_MANIFEST:
                 name += DOWNLOAD_MARKER
 
@@ -335,10 +334,6 @@ class PageManager(QWizardPage):
     def allow_overwrite(self):
         """
         Determines if overwrite is allowed.
-        BUG FIX: Do NOT use self.cb_overwrite.isVisible() here.
-        When this method is called during installation (from PageInstalacao),
-        this page (PageManager) is hidden in the wizard stack, so isVisible() returns False.
-        We must check the Manager's configuration property directly.
         """
         if not getattr(self.manager, 'show_overwrite_option', True):
             return False

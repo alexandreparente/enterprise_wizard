@@ -70,10 +70,6 @@ class BaseManager(ABC):
         return self.destination_subfolder
 
     @property
-    def json_section_name(self):
-        return self.source_subfolder
-
-    @property
     def allowed_extensions(self):
         return None
 
@@ -129,7 +125,8 @@ class BaseManager(ABC):
                 all_items.extend(items)
 
             elif div_type in (DIV_TYPE_REMOTE_MANIFEST, DIV_TYPE_LOCAL_MANIFEST):
-                manifest_data = div_config.get('manifest_data', {})
+                # Manifest data is expected to be a raw list (Plugin Exporter format)
+                manifest_data = div_config.get('manifest_data', [])
                 items = self._discover_manifest_items(div_name, manifest_data)
                 all_items.extend(items)
 
@@ -146,8 +143,8 @@ class BaseManager(ABC):
             f_lower = f.lower()
             full_path = os.path.join(path, f)
 
+            # 1. Physical Files
             if valid_exts and f_lower.endswith(valid_exts):
-
                 label = self._generate_label(div_label, f, full_path, False)
                 items.append({
                     'id': f"{div_label}::{f}",
@@ -158,40 +155,56 @@ class BaseManager(ABC):
                     'is_remote': False
                 })
 
+            # 2. JSON Manifests (Plugin Exporter Format)
             elif f_lower.endswith('.json'):
-                remote_data = parse_remote_json(full_path)
-                if remote_data:
-                    target = remote_data['filename']
-                    if valid_exts and not target.lower().endswith(valid_exts): continue
+                raw_list = parse_remote_json(full_path)
+                if raw_list:
+                    items.extend(self._discover_manifest_items(div_label, raw_list))
 
-                    label = self._generate_label(div_label, target, remote_data['url'], True, remote_data.get('label'))
-                    items.append({
-                        'id': f"{div_label}::REMOTE::{target}",
-                        'label': label,
-                        'checked': False,
-                        'source_path': remote_data['url'],
-                        'collision_id': target,
-                        'is_remote': True,
-                        'is_zip': remote_data['is_zip']
-                    })
         return items
 
-    def _discover_manifest_items(self, div_label, manifest_data):
+    def _discover_manifest_items(self, div_label, raw_list):
+        """
+        Processes a raw list of items using Plugin Exporter keys.
+        Keys used: 'download_url', 'name', 'filename' (or 'id').
+        """
         items = []
-        section_key = self.json_section_name
-        if not manifest_data or not isinstance(manifest_data, dict): return []
-        if section_key not in manifest_data: return []
+        if not isinstance(raw_list, list): return []
 
-        for r in manifest_data[section_key]:
+        for r in raw_list:
+            # 1. URL (Using 'download_url' as per Plugin Exporter)
+            url = r.get('download_url')
+
+            # 2. Label (Using 'name' as per Plugin Exporter)
+            label_text = r.get('name', 'Unnamed Resource')
+
+            # 3. Filename/ID
             filename = r.get('filename')
-            url = r.get('url')
-            if not filename or not url: continue
-            if self.allowed_extensions and not filename.lower().endswith(self.allowed_extensions): continue
+            if not filename:
+                # Fallback to 'id' or 'plugin_id' if filename is missing
+                filename = r.get('id', r.get('plugin_id'))
 
-            label = self._generate_label(div_label, filename, url, True, r.get('label'))
+                # Check context for ZIP extension
+                is_zip_context = r.get('is_zip', False)
+                if is_zip_context and filename and not filename.endswith('.zip'):
+                    filename += ".zip"
+
+            # Validation
+            if not url or not filename:
+                continue
+
+            # Filter Extensions (if not a ZIP file)
+            if self.allowed_extensions:
+                is_zip = r.get('is_zip', filename.lower().endswith('.zip'))
+                if not is_zip:
+                    if not filename.lower().endswith(self.allowed_extensions):
+                        continue
+
+            final_label = self._generate_label(div_label, filename, url, True, label_text)
+
             items.append({
                 'id': f"{div_label}::MANIFEST::{filename}",
-                'label': label,
+                'label': final_label,
                 'checked': False,
                 'source_path': url,
                 'collision_id': filename,

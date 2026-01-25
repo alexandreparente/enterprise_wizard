@@ -31,7 +31,6 @@ import os
 from qgis.PyQt.QtCore import QCoreApplication
 
 # --- Constants for Division Types ---
-# Using constants prevents typo bugs and makes refactoring easier
 DIV_TYPE_FOLDER = "folder"
 DIV_TYPE_REMOTE_MANIFEST = "remote_manifest"
 DIV_TYPE_LOCAL_MANIFEST = "local_manifest"
@@ -56,31 +55,21 @@ def format_resource_name(filename):
 
 def parse_remote_json(json_path):
     """
-    Reads a .json pointer file (local shortcut) and extracts remote resource info.
-    Returns a dict with keys: filename, url, label, is_zip.
+    Simply loads a JSON file.
+    Expects a list (Plugin Exporter format).
+    Returns the raw list or None if invalid.
     """
     try:
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        filename = data.get('filename')
-        url = data.get('url')
-
-        if not filename or not url:
+        # Strict check: Root must be a list
+        if isinstance(data, list):
+            return data
+        else:
+            print(f"Ignored JSON {json_path}: Root is not a list.")
             return None
 
-        raw_label = data.get('label')
-        if not raw_label:
-            raw_label = format_resource_name(filename)
-
-        return {
-            'filename': filename,
-            'url': url,
-            'label': raw_label,
-            'is_zip': data.get('is_zip', False),
-            'description': data.get('description', '')
-        }
-
     except Exception as e:
-        print(f"Error parsing remote JSON {json_path}: {e}")
+        print(f"Error parsing JSON {json_path}: {e}")
         return None
