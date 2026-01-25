@@ -45,8 +45,12 @@ class StyleManager(BaseManager):
         return tr("Select XML style files for import")
 
     @property
-    def destination_subfolder(self):
+    def source_subfolder(self):
         return "styles"
+
+    @property
+    def destination_subfolder(self):
+        return None
 
     @property
     def allowed_extensions(self):
@@ -60,6 +64,7 @@ class StyleManager(BaseManager):
         if not style:
             raise Exception("Could not access QGIS style library.")
 
+        # Imports directly from source (temp file or plugin folder)
         if not style.importXml(source_path):
             raise Exception("QGIS failed to import style XML")
 
