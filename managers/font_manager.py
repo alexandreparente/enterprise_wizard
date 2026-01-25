@@ -25,17 +25,14 @@ __author__ = 'Alexandre Parente Lima'
 __date__ = '2026-01-22'
 __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
-import os
-
-from qgis.core import QgsApplication
-
 from .base_manager import BaseManager
 from ..enterprise_wizard_util import tr
 
 
 class FontManager(BaseManager):
     """
-    Manages Font installation (TTF/OTF) using the native QgsFontManager API.
+    Manages Font installation by copying them to the user profile 'fonts' folder.
+    Supported since QGIS 3.20.
     """
 
     @property
@@ -47,40 +44,16 @@ class FontManager(BaseManager):
         return tr("Select fonts for installation")
 
     @property
+    def source_subfolder(self):
+        return "fonts"
+
+    @property
     def destination_subfolder(self):
         return "fonts"
 
     @property
     def allowed_extensions(self):
-        return (".ttf", ".otf", ".woff", ".woff2")
-
-    def _install_action(self, source_path, final_path, item_data):
-        """
-        Loads font into memory via QGIS API instead of just copying.
-        BaseManager has already handled the download (if remote)
-        and passed the path here.
-        """
-        filename = item_data['collision_id']
-        # Extract extension without dot (e.g. "ttf")
-        extension = os.path.splitext(filename)[1].replace(".", "")
-
-        try:
-            with open(source_path, 'rb') as f:
-                font_data = f.read()
-
-            # API: installFontsFromData(data, fontFamily, extension)
-            font_manager = QgsApplication.fontManager()
-            result = font_manager.installFontsFromData(font_data, filename, extension)
-
-            # result = (success, error_msg, families_list)
-            if not result[0]:
-                raise Exception(f"{tr('QGIS Error')}: {result[1]}")
-
-            return True
-
-        except Exception as e:
-            # Re-raise to be caught and logged by BaseManager
-            raise Exception(f"{tr('Font Load Error')}: {e}")
+        return (".zip",".ttf", ".otf", ".woff", ".woff2")
 
     @property
     def show_overwrite_option(self):
