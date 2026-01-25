@@ -160,7 +160,7 @@ class BaseManager(ABC):
                     target = remote_data['filename']
                     if valid_exts and not target.lower().endswith(valid_exts): continue
 
-                    label = self._generate_label(div_label, target, remote_data['url'], True, remote_data['label'])
+                    label = self._generate_label(div_label, target, remote_data['url'], True, remote_data.get('label'))
                     items.append({
                         'id': f"{div_label}::REMOTE::{target}",
                         'label': label,
@@ -208,7 +208,7 @@ class BaseManager(ABC):
             is_remote = item.get('is_remote', False)
             final_path = os.path.join(dest_dir, filename) if dest_dir else filename
 
-            # 1. Existence Check (Only for physical files)
+            # 1. Check Existence
             if dest_dir and os.path.exists(final_path):
                 if not overwrite:
                     log_callback(tr("[SKIPPED] Exists: %s") % filename)
@@ -226,8 +226,10 @@ class BaseManager(ABC):
                     temp_file = None
                     source_to_use = src
 
-                # 3. Process Resource
-                if item.get('is_zip'):
+                # 3. Detect ZIP (Flag OR Extension)
+                is_zip_file = item.get('is_zip', False) or filename.lower().endswith('.zip')
+
+                if is_zip_file:
                     with zipfile.ZipFile(source_to_use, 'r') as z:
                         z.extractall(dest_dir)
                     log_callback(tr("[OK] Extracted: %s") % item['label'])

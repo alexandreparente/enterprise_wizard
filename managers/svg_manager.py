@@ -43,7 +43,7 @@ class SvgManager(BaseManager):
     @property
     def destination_subfolder(self):
         """
-        Files found in config/<divison>/svg
+        Files found in divisions/<divison>/svg
         Extracted to .../profiles/default/svg
         """
         return "svg"
