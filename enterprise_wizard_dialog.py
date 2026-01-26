@@ -58,7 +58,7 @@ class InstallerWizard(QWizard):
 
         self.setWindowTitle(tr("Enterprise Setup Wizard"))
         self.setWizardStyle(QWizard.ModernStyle)
-        self.resize(700, 500)
+        self.resize(600, 400)
 
         self.setButtonText(QWizard.BackButton, tr("Back"))
         self.setButtonText(QWizard.NextButton, tr("Next"))
