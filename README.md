@@ -82,26 +82,25 @@ The configuration root is organized by Division.
 Each division contains subdirectories scanned by the corresponding resource managers.
 
 ```text
-divisions/
-├── division_name/
-│   ├── project_templates/      # .qgz, .qgs
-│   ├── composer_templates/     # .qpt
-│   ├── styles/                 # .xml
-│   ├── palettes/               # .gpl
-│   ├── svg/                    # .zip
-│   ├── fonts/                  # .ttf, .otf, .woff
-│   ├── crs/                    # .wkt, .json
-│   ├── proj/                   # .tif, .gsb, .gtx
-│   ├── connections/            # .xml
-│   ├── processing/
-│   │   └── models/             # .model3
-│   ├── python/
-│   │   └── expressions/        # .py
-│   └── kart/
-│       └── repositories.json   # Kart/Git repository definitions
-│
-└── divisions.json              # Optional explicit division definitions
-```
+.
+├── divisions.json                  # Optional: Remote/Custom division definitions
+└── divisions/
+    └── division_name/              # Folder matching the Division ID (or defined in JSON)
+        ├── project_templates/      # QGIS Projects (.qgz, .qgs)
+        ├── composer_templates/     # Print Layouts (.qpt)
+        ├── styles/                 # Layer Styles (.xml)
+        ├── palettes/               # Color Palettes (.gpl)
+        ├── svg/                    # SVG Libraries (.zip)
+        ├── fonts/                  # Typography (.ttf, .otf, .woff)
+        ├── crs/                    # Custom CRS definitions (.wkt, .json)
+        ├── proj/                   # Grid Shift files (.tif, .gsb, .gtx)
+        ├── connections/            # DB/Service Connections (.xml)
+        ├── processing/
+        │   └── models/             # Processing Models (.model3)
+        ├── python/
+        │   └── expressions/        # Custom Expression Functions (.py)
+        └── kart/
+            └── repositories.json   # Kart/Git repository definitions
 
 Each subdirectory is optional and only processed if present.
 
