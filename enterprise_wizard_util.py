@@ -55,20 +55,39 @@ def format_resource_name(filename):
 
 def parse_remote_json(json_path):
     """
-    Simply loads a JSON file.
-    Expects a list (Plugin Exporter format).
-    Returns the raw list or None if invalid.
+    Loads a JSON file with STRICT rules.
+
+    Allowed Formats:
+    1. Dictionary (Standard): { "fonts": [...], "styles": [...] }
+    2. Plugin List (Exception): [ {"plugin_id":...}, ... ] -> Converted to { "plugins": [...] }
+
+    Any other format (e.g. flat list of fonts) is considered INVALID (Error).
     """
     try:
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        # Strict check: Root must be a list
-        if isinstance(data, list):
+        # Case 1: Standard Dictionary
+        if isinstance(data, dict):
             return data
-        else:
-            print(f"Ignored JSON {json_path}: Root is not a list.")
+
+        # Case 2: List (Strict Check)
+        if isinstance(data, list):
+            # Only allowed if it is a Plugin Exporter list (must have 'plugin_id')
+            is_plugin_list = False
+            for item in data:
+                if isinstance(item, dict) and 'plugin_id' in item:
+                    is_plugin_list = True
+                    break
+
+            if is_plugin_list:
+                return {"plugins": data}
+
+            # If it is a list but NOT plugins -> ERROR (Strict Mode)
+            print(f"Ignored JSON {json_path}: Flat lists are only allowed for Plugins.")
             return None
+
+        return None
 
     except Exception as e:
         print(f"Error parsing JSON {json_path}: {e}")

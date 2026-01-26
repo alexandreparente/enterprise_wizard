@@ -70,6 +70,14 @@ class BaseManager(ABC):
         return self.destination_subfolder
 
     @property
+    def json_section_name(self):
+        """
+        Defines the JSON key this manager listens to (e.g., 'fonts', 'styles').
+        Defaults to the source_subfolder name.
+        """
+        return self.source_subfolder
+
+    @property
     def allowed_extensions(self):
         return None
 
@@ -86,6 +94,18 @@ class BaseManager(ABC):
 
         marker = DOWNLOAD_MARKER if is_remote else ""
         return f"[{div_label}] {clean_name}{marker}"
+
+    # --- Existence Check (New Hook) ---
+    def _item_exists(self, final_path, item_data):
+        """
+        Checks if the item already exists in the destination.
+        Default implementation checks for file existence on disk.
+        Subclasses (like Connections) should override this to check QgsSettings.
+        """
+        # Only check file existence if we have a destination folder
+        if self.destination_subfolder:
+            return os.path.exists(final_path)
+        return False
 
     # --- Installation Action ---
     def _install_action(self, source_path, final_path, item_data):
@@ -125,8 +145,8 @@ class BaseManager(ABC):
                 all_items.extend(items)
 
             elif div_type in (DIV_TYPE_REMOTE_MANIFEST, DIV_TYPE_LOCAL_MANIFEST):
-                # Manifest data is expected to be a raw list (Plugin Exporter format)
-                manifest_data = div_config.get('manifest_data', [])
+                # Manifest data is expected to be a Dict with sections
+                manifest_data = div_config.get('manifest_data', {})
                 items = self._discover_manifest_items(div_name, manifest_data)
                 all_items.extend(items)
 
@@ -155,45 +175,45 @@ class BaseManager(ABC):
                     'is_remote': False
                 })
 
-            # 2. JSON Manifests (Plugin Exporter Format)
+            # 2. JSON Manifests
             elif f_lower.endswith('.json'):
-                raw_list = parse_remote_json(full_path)
-                if raw_list:
-                    items.extend(self._discover_manifest_items(div_label, raw_list))
+                remote_data = parse_remote_json(full_path)
+                if not remote_data: continue
+
+                # Validates against strict schema
+                if isinstance(remote_data, list):
+                    remote_data = {self.json_section_name: remote_data}
+
+                items.extend(self._discover_manifest_items(div_label, remote_data))
 
         return items
 
-    def _discover_manifest_items(self, div_label, raw_list):
+    def _discover_manifest_items(self, div_label, manifest_dict):
         """
-        Processes a raw list of items using Plugin Exporter keys.
-        Keys used: 'download_url', 'name', 'filename' (or 'id').
+        Processes a manifest dict using the manager's section key.
         """
         items = []
-        if not isinstance(raw_list, list): return []
+        section_key = self.json_section_name
+
+        if not isinstance(manifest_dict, dict): return []
+        if section_key not in manifest_dict: return []
+
+        raw_list = manifest_dict[section_key]
 
         for r in raw_list:
-            # 1. URL (Using 'download_url' as per Plugin Exporter)
             url = r.get('download_url')
-
-            # 2. Label (Using 'name' as per Plugin Exporter)
             label_text = r.get('name', 'Unnamed Resource')
-
-            # 3. Filename/ID
             filename = r.get('filename')
-            if not filename:
-                # Fallback to 'id' or 'plugin_id' if filename is missing
-                filename = r.get('id', r.get('plugin_id'))
 
-                # Check context for ZIP extension
+            if not filename:
+                filename = r.get('id', r.get('plugin_id'))
                 is_zip_context = r.get('is_zip', False)
                 if is_zip_context and filename and not filename.endswith('.zip'):
                     filename += ".zip"
 
-            # Validation
             if not url or not filename:
                 continue
 
-            # Filter Extensions (if not a ZIP file)
             if self.allowed_extensions:
                 is_zip = r.get('is_zip', filename.lower().endswith('.zip'))
                 if not is_zip:
@@ -215,7 +235,7 @@ class BaseManager(ABC):
 
     def install_items(self, items, log_callback, overwrite=False):
         subfolder = self.destination_subfolder
-        # Default destination (files). Subclasses like Style/Font might ignore this.
+        # Default destination (files).
         dest_dir = os.path.join(QgsApplication.qgisSettingsDirPath(), subfolder) if subfolder else ""
         if dest_dir: os.makedirs(dest_dir, exist_ok=True)
 
@@ -225,8 +245,8 @@ class BaseManager(ABC):
             is_remote = item.get('is_remote', False)
             final_path = os.path.join(dest_dir, filename) if dest_dir else filename
 
-            # 1. Check Existence
-            if dest_dir and os.path.exists(final_path):
+            # 1. Check Existence (Polymorphic)
+            if self._item_exists(final_path, item):
                 if not overwrite:
                     log_callback(tr("[SKIPPED] Exists: %s") % filename)
                     continue
@@ -248,9 +268,7 @@ class BaseManager(ABC):
 
                 if is_zip_file:
                     with zipfile.ZipFile(source_to_use, 'r') as z:
-                        # Ensures it extracts to dest_dir (only if dest_dir exists)
-                        if dest_dir:
-                            z.extractall(dest_dir)
+                        if dest_dir: z.extractall(dest_dir)
                     log_callback(tr("[OK] Extracted: %s") % item['label'])
                 else:
                     success = self._install_action(source_to_use, final_path, item)
@@ -265,12 +283,28 @@ class BaseManager(ABC):
                 log_callback(tr("[ERROR] Failed to install %s: %s") % (filename, str(e)))
 
     def _download_file(self, url):
-        r = requests.get(url, stream=True, timeout=30)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        r = requests.get(url, stream=True, timeout=30, headers=headers)
         r.raise_for_status()
         fd, temp_path = tempfile.mkstemp()
         with os.fdopen(fd, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
+
+        try:
+            with open(temp_path, 'rb') as f:
+                header = f.read(4)
+                if header.startswith(b'<') or header.startswith(b'<!'):
+                    with open(temp_path, 'r', encoding='utf-8', errors='ignore') as fr:
+                        content_preview = fr.read(100)
+                    os.remove(temp_path)
+                    raise Exception(f"Server returned HTML/Error instead of file: {content_preview}")
+        except Exception as e:
+            if os.path.exists(temp_path): os.remove(temp_path)
+            raise e
+
         return temp_path
 
     @property
