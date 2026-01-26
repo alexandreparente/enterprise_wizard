@@ -52,7 +52,7 @@ class PluginManager(BaseManager):
 
     @property
     def description(self):
-        return tr("Select official plugins for installation")
+        return tr("Select plugins for installation")
 
     # --- Discovery Logic Override
 
