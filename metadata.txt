@@ -1,8 +1,8 @@
 [general]
 name=Enterprise Setup Wizard
 description=Installs standard enterprise resources, models, and connections for QGIS.
-qgisMinimumVersion=3.34
-version=1.0
+qgisMinimumVersion=3.40
+version=0.1
 author=Alexandre Parente Lima
 email=alexandre.parente@gmail.com
 
@@ -30,4 +30,4 @@ category=Utilities
 server=False
 
 changelog=
-    1.0 - Initial release with support for Projects, SVGs, Fonts, CRS, Styles, and Recommended Plugins.
+    0.1 - Initial release with support for Projects, SVGs, Fonts, CRS, Styles, and Recommended Plugins.
