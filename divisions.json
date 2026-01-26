@@ -1,10 +1,10 @@
 [
   {
-    "id": "Default (GitHub)",
-    "name": "Default",
+    "id": "Teste (Github)",
+    "name": "Teste (Github)",
     "type": "remote_manifest",
     "url": "https://raw.githubusercontent.com/alexandreparente/enterprise_wizard/main/repository/manifest.json",
-    "description": "Recursos oficiais hospedados no repositório do projeto",
-    "default_checked": true
+    "description": "Recursos hospedados no repositório do projeto",
+    "default_checked": false
   }
 ]
