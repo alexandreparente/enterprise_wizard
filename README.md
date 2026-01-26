@@ -101,6 +101,7 @@ Each division contains subdirectories scanned by the corresponding resource mana
         │   └── expressions/        # Custom Expression Functions (.py)
         └── kart/
             └── repositories.json   # Kart/Git repository definitions
+```
 
 Each subdirectory is optional and only processed if present.
 
