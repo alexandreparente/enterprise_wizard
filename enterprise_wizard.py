@@ -38,6 +38,7 @@ from .managers.composer_templates_manager import ComposerTemplatesManager
 from .managers.connection_manager import (
     PostgresConnectionManager,
     WfsConnectionManager,
+    WmsConnectionManager,
     XyzConnectionManager,
     ArcGisConnectionManager
 )
@@ -114,6 +115,7 @@ class EnterpriseWizardPlugin:
         managers = [
             PostgresConnectionManager(self.config_root, []),
             WfsConnectionManager(self.config_root, []),
+            WmsConnectionManager(self.config_root, []),
             XyzConnectionManager(self.config_root, []),
             ArcGisConnectionManager(self.config_root, []),
             KartManager(self.config_root, [])
