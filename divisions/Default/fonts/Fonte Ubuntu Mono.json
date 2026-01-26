@@ -1,0 +1,10 @@
+{
+  "fonts": [
+    {
+      "name": "Família Ubuntu Mono",
+      "filename": "UbuntuMono_Family.zip",
+      "download_url": "https://github.com/alexandreparente/enterprise_wizard/raw/f32bdede8e40d889ebc143b35aee6dc359947ebc/repository/Ubuntu_Mono.zip",
+      "is_zip": true
+    }
+  ]
+}
