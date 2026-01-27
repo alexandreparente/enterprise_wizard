@@ -169,6 +169,7 @@ class BaseManager(ABC):
                 items.append({
                     'id': f"{div_label}::{f}",
                     'label': label,
+                    'name': format_resource_name(f), # Campo puro para lógica técnica
                     'checked': False,
                     'source_path': full_path,
                     'collision_id': f,
@@ -225,6 +226,7 @@ class BaseManager(ABC):
             items.append({
                 'id': f"{div_label}::MANIFEST::{filename}",
                 'label': final_label,
+                'name': label_text,  # Clean name for technical use/collision
                 'checked': False,
                 'source_path': url,
                 'collision_id': filename,
@@ -248,15 +250,15 @@ class BaseManager(ABC):
             # 1. Check Existence (Polymorphic)
             if self._item_exists(final_path, item):
                 if not overwrite:
-                    log_callback(tr("[SKIPPED] Exists: %s") % filename)
+                    log_callback(tr("[SKIPPED] Exists: %s") % item['label'])
                     continue
                 else:
-                    log_callback(tr("[OVERWRITE] Updating: %s") % filename)
+                    log_callback(tr("[OVERWRITE] Updating: %s") % item['label'])
 
             try:
                 # 2. Download / Acquire Resource
                 if is_remote:
-                    log_callback(tr("[DOWNLOAD] Downloading: %s...") % filename)
+                    log_callback(tr("[DOWNLOAD] Downloading: %s...") % item['label'])
                     temp_file = self._download_file(src)
                     source_to_use = temp_file
                 else:
@@ -271,7 +273,11 @@ class BaseManager(ABC):
                         if dest_dir: z.extractall(dest_dir)
                     log_callback(tr("[OK] Extracted: %s") % item['label'])
                 else:
-                    success = self._install_action(source_to_use, final_path, item)
+                    success = self._install_action(
+                        source_to_use,
+                        final_path,
+                        {**item, 'overwrite': overwrite}
+                    )
                     if success:
                         log_callback(tr("[OK] Installed: %s") % item['label'])
 
