@@ -27,6 +27,7 @@ __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
 
 import os
+import re
 from qgis.core import QgsCoordinateReferenceSystem, QgsApplication
 from pyproj import CRS
 
@@ -131,22 +132,31 @@ class CrsManager(BaseManager):
             with open(source_path, 'r', encoding='utf-8') as f:
                 proj_data = f.read().strip()
 
+            # 1. Parse using pyproj (json/wkt)
             proj = CRS.from_user_input(proj_data)
 
             if not proj.name:
                 raise Exception(tr("The CRS file lacks an internal name."))
 
-            # Overwrite (remove/install)
+            # 2. Overwrite
             if item_data.get('overwrite'):
                 self._remove_existing_user_crs(proj.name)
 
-            crs = QgsCoordinateReferenceSystem()
-            crs.createFromWkt(proj.to_wkt())
+            # 3. Save to  WKT2_2019 (keeps Region/BBOX)
+            full_wkt = proj.to_wkt(version="WKT2_2019")
 
-            if not crs.isValid():
-                raise Exception(tr("Invalid CRS definition"))
+            # 4. Manual strip of the trailing ID to silence 'CRS not found' terminal errors
+            clean_wkt = re.sub(r',ID\["EPSG",\d+\](?=\]$)', '', full_wkt)
 
-            res = crs.saveAsUserCrs(proj.name)
+            # 4. Installation
+            final_crs = QgsCoordinateReferenceSystem()
+            final_crs.createFromWkt(clean_wkt)
+
+            if not final_crs.isValid():
+                raise Exception(tr("Invalid CRS definition after cleaning"))
+
+            # 5. Save to user database (assigns USER:1000xx automatically)
+            res = final_crs.saveAsUserCrs(proj.name)
 
             if res == -1:
                 raise Exception(tr("QGIS API failed to save CRS"))
