@@ -25,9 +25,10 @@ __author__ = 'Alexandre Parente Lima'
 __date__ = '2026-01-22'
 __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
-import re
 
-from qgis.core import QgsCoordinateReferenceSystem
+import os
+from qgis.core import QgsCoordinateReferenceSystem, QgsApplication
+from pyproj import CRS
 
 from .base_manager import BaseManager
 from ..enterprise_wizard_util import tr
@@ -53,7 +54,40 @@ class CrsManager(BaseManager):
 
     @property
     def allowed_extensions(self):
-        return ('.wkt',)
+        return ('.wkt', '.json')
+
+    # User Space Collision Detection
+    def _item_exists(self, final_path, item_data):
+        """
+        Checks if the CRS already exists in the QGIS User Database (qgis.db).
+        """
+
+        target_name = None
+
+        # 1. Remote or manifest CRS -> use technical name already cleaned
+        if item_data.get('is_remote'):
+            target_name = item_data.get('name')
+
+        # 2. Local CRS -> extract technical name via pyproj
+        else:
+            source_path = item_data.get('source_path')
+            if source_path and os.path.exists(source_path):
+                try:
+                    with open(source_path, 'r', encoding='utf-8') as f:
+                        target_name = CRS.from_user_input(f.read().strip()).name
+                except Exception:
+                    return False
+
+        if not target_name:
+            return False
+
+        # 3. Check for user CRS in the registry
+        registry = QgsApplication.coordinateReferenceSystemRegistry()
+
+        return any(
+            details.name == target_name
+            for details in registry.userCrsList()
+        )
 
     def _generate_label(self, div_label, filename, source_path, is_remote, manifest_label=None):
         """
@@ -62,37 +96,61 @@ class CrsManager(BaseManager):
         if is_remote:
             return super()._generate_label(div_label, filename, source_path, is_remote, manifest_label)
 
-        crs_name = filename
+        display_name = filename
         try:
-            name_pattern = re.compile(r'^\w+\["([^"]+)"')
             with open(source_path, 'r', encoding='utf-8') as f:
-                content = f.read().strip()
-                match = name_pattern.search(content)
-                if match: crs_name = match.group(1)
-        except:
+                tech_name = CRS.from_user_input(f.read().strip()).name
+                if tech_name:
+                    display_name = tech_name
+        except Exception:
             pass
 
-        return f"[{div_label}] {crs_name}"
+        return f"[{div_label}] {display_name}"
 
-    # --- Custom Install Action ---
+
+    def _remove_existing_user_crs(self, crs_name):
+        """
+        Removes an existing user CRS by name.
+        """
+        registry = QgsApplication.coordinateReferenceSystemRegistry()
+
+        for details in registry.userCrsList():
+            if details.name == crs_name:
+                # The identifier for removal is details.id
+                registry.removeUserCrs(details.id)
+                return True
+
+        return False
+
+
     def _install_action(self, source_path, final_path, item_data):
         """
         Receives the local path (or downloaded temp path) and installs CRS.
         """
         try:
             with open(source_path, 'r', encoding='utf-8') as f:
-                wkt = f.read().strip()
+                proj_data = f.read().strip()
+
+            proj = CRS.from_user_input(proj_data)
+
+            if not proj.name:
+                raise Exception(tr("The CRS file lacks an internal name."))
+
+            # Overwrite (remove/install)
+            if item_data.get('overwrite'):
+                self._remove_existing_user_crs(proj.name)
 
             crs = QgsCoordinateReferenceSystem()
-            crs.createFromWkt(wkt)
+            crs.createFromWkt(proj.to_wkt())
 
             if not crs.isValid():
-                raise Exception("Invalid WKT definition")
+                raise Exception(tr("Invalid CRS definition"))
 
-            final_name = item_data['collision_id']
-            res = crs.saveAsUserCrs(final_name)
+            res = crs.saveAsUserCrs(proj.name)
 
-            if res == -1: raise Exception("QGIS API failed to save CRS")
+            if res == -1:
+                raise Exception(tr("QGIS API failed to save CRS"))
+
             return True
 
         except Exception as e:
