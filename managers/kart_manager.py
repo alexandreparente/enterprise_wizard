@@ -32,11 +32,12 @@ import stat
 import subprocess
 import sys
 
-from .base_manager import BaseManager
+from ..enterprise_wizard_base_manager import BaseManager
 from ..enterprise_wizard_util import (
     tr,
     DIV_TYPE_FOLDER, DIV_TYPE_REMOTE_MANIFEST, DIV_TYPE_LOCAL_MANIFEST
 )
+
 
 class KartManager(BaseManager):
     """

@@ -25,7 +25,7 @@ __author__ = 'Alexandre Parente Lima'
 __date__ = '2026-01-22'
 __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
-from .base_manager import BaseManager
+from ..enterprise_wizard_base_manager import BaseManager
 from ..enterprise_wizard_util import tr
 
 
@@ -53,7 +53,7 @@ class FontManager(BaseManager):
 
     @property
     def allowed_extensions(self):
-        return (".zip",".ttf", ".otf", ".woff", ".woff2")
+        return (".zip", ".ttf", ".otf", ".woff", ".woff2")
 
     @property
     def show_overwrite_option(self):

@@ -190,32 +190,32 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="251"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="251"/>
         <source>[SKIPPED] Exists: %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="254"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="254"/>
         <source>[OVERWRITE] Updating: %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="259"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="259"/>
         <source>[DOWNLOAD] Downloading: %s...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="272"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="272"/>
         <source>[OK] Extracted: %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="276"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="276"/>
         <source>[OK] Installed: %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="283"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="283"/>
         <source>[ERROR] Failed to install %s: %s</source>
         <translation></translation>
     </message>

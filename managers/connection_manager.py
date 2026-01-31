@@ -27,10 +27,9 @@ __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
 import os
 import xml.etree.ElementTree as ET
-
 from qgis.core import QgsSettings
 
-from .base_manager import BaseManager
+from ..enterprise_wizard_base_manager import BaseManager
 from ..enterprise_wizard_util import tr
 
 

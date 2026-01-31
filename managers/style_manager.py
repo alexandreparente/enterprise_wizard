@@ -27,7 +27,7 @@ __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
 from qgis.core import QgsStyle
 
-from .base_manager import BaseManager
+from ..enterprise_wizard_base_manager import BaseManager
 from ..enterprise_wizard_util import tr
 
 

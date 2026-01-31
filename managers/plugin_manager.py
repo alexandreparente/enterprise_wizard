@@ -27,11 +27,10 @@ __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
 import json
 import os
-
 import pyplugin_installer
 import qgis.utils
 
-from .base_manager import BaseManager
+from ..enterprise_wizard_base_manager import BaseManager
 from ..enterprise_wizard_util import tr
 
 

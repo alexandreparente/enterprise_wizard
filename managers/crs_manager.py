@@ -25,13 +25,12 @@ __author__ = 'Alexandre Parente Lima'
 __date__ = '2026-01-22'
 __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
-
 import os
 import re
-from qgis.core import QgsCoordinateReferenceSystem, QgsApplication
 from pyproj import CRS
+from qgis.core import QgsCoordinateReferenceSystem, QgsApplication
 
-from .base_manager import BaseManager
+from ..enterprise_wizard_base_manager import BaseManager
 from ..enterprise_wizard_util import tr
 
 
@@ -108,7 +107,6 @@ class CrsManager(BaseManager):
 
         return f"[{div_label}] {display_name}"
 
-
     def _remove_existing_user_crs(self, crs_name):
         """
         Removes an existing user CRS by name.
@@ -122,7 +120,6 @@ class CrsManager(BaseManager):
                 return True
 
         return False
-
 
     def _install_action(self, source_path, final_path, item_data):
         """

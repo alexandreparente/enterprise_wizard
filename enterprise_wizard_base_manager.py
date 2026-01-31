@@ -26,17 +26,21 @@ __date__ = '2026-01-22'
 __copyright__ = '(C) 2026 by Alexandre Parente Lima'
 
 import os
+import requests
 import shutil
 import tempfile
 import zipfile
 from abc import ABC, abstractmethod
-
-import requests
 from qgis.core import QgsApplication
 
-from ..enterprise_wizard_util import (
-    tr, format_resource_name, parse_remote_json, DOWNLOAD_MARKER,
-    DIV_TYPE_FOLDER, DIV_TYPE_REMOTE_MANIFEST, DIV_TYPE_LOCAL_MANIFEST
+from .enterprise_wizard_util import (
+    tr,
+    format_resource_name,
+    parse_remote_json,
+    DOWNLOAD_MARKER,
+    DIV_TYPE_FOLDER,
+    DIV_TYPE_REMOTE_MANIFEST,
+    DIV_TYPE_LOCAL_MANIFEST
 )
 
 
@@ -169,7 +173,7 @@ class BaseManager(ABC):
                 items.append({
                     'id': f"{div_label}::{f}",
                     'label': label,
-                    'name': format_resource_name(f), # Campo puro para lógica técnica
+                    'name': format_resource_name(f),  # Campo puro para lógica técnica
                     'checked': False,
                     'source_path': full_path,
                     'collision_id': f,
@@ -250,7 +254,7 @@ class BaseManager(ABC):
             # 1. Check Existence (Polymorphic)
             if self._item_exists(final_path, item):
                 if not overwrite:
-                    log_callback(tr("[SKIPPED] Exists: %s") % item['label'])
+                    log_callback(tr("[SKIPPED] Installed: %s") % item['label'])
                     continue
                 else:
                     log_callback(tr("[OVERWRITE] Updating: %s") % item['label'])

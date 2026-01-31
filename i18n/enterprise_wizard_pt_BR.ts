@@ -191,32 +191,32 @@
         <translation>Nenhum recurso instalável foi encontrado para as divisões selecionadas.</translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="251"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="251"/>
         <source>[SKIPPED] Exists: %s</source>
         <translation>[IGNORADO] Já existe: %s</translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="254"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="254"/>
         <source>[OVERWRITE] Updating: %s</source>
         <translation>[SOBRESCREVER] Atualizando: %s</translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="259"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="259"/>
         <source>[DOWNLOAD] Downloading: %s...</source>
         <translation>[DOWNLOAD] Baixando: %s...</translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="272"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="272"/>
         <source>[OK] Extracted: %s</source>
         <translation>[OK] Extraído: %s</translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="276"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="276"/>
         <source>[OK] Installed: %s</source>
         <translation>[OK] Instalado: %s</translation>
     </message>
     <message>
-        <location filename="../managers/base_manager.py" line="283"/>
+        <location filename="../managers/enterprise_wizard_base_manager.py" line="283"/>
         <source>[ERROR] Failed to install %s: %s</source>
         <translation>[ERRO] Falha ao instalar %s: %s</translation>
     </message>
